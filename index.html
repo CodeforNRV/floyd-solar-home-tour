@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html lang="en">
     <head>
-        <title>Walking Tour</title>
+        <title>Floyd Solar Home Tour</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
         <!-- Latest compiled and minified CSS -->
@@ -66,7 +66,7 @@
                 var request = {
                     origin: userLocation,
                     destination: walkingTourSpots[0]["location"],
-                    travelMode: google.maps.DirectionsTravelMode.WALKING
+                    travelMode: google.maps.DirectionsTravelMode.DRIVING
                 };
                 directionsService.route(request, function(response, status) {
                     if (status == google.maps.DirectionsStatus.OK) {
