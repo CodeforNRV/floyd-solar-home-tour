@@ -3,20 +3,20 @@
     <head>
         <title>Walking Tour</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-        
+
         <!-- Latest compiled and minified CSS -->
         <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
 
         <!-- Optional theme -->
         <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css">
-        
+
         <link href="./walking-tour.css" rel="stylesheet">
     </head>
-    
+
     <body>
         <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
             <div class="navbar-header">
-                <a class="navbar-brand" href="#">Portsmouth Path of History</a>
+                <a class="navbar-brand" href="#">Floyd Solar Home Tour</a>
             </div>
         </nav>
         <div class="container">
@@ -39,7 +39,7 @@
         </div>
         <script src="./jquery-2.0.3.js"></script>
         <script src="http://maps.google.com/maps/api/js?sensor=true&libraries=geometry"></script>
-        
+
         <script>
             var mapOptions = {
                 zoom:15,
@@ -50,19 +50,19 @@
             var directionsDisplay = new google.maps.DirectionsRenderer();
             var userLocation;
             var walkingTourSpots = [];
-            
+
             $("#start-tour").click(function() {
                 $("#tour-overview").hide();
                 $("#tour-spot").show();
                 directionsDisplay.setMap(map);
             });
-            
+
             var setTourStop = function() {
                 $("#spot-name").html(walkingTourSpots[0]["page"]["name"]);
                 $("#spot-content").html(walkingTourSpots[0]["page"]["content"]);
-                
+
                 directionsDisplay.setPanel($("#directions-full")[0]);
-                
+
                 var request = {
                     origin: userLocation,
                     destination: walkingTourSpots[0]["location"],
@@ -74,7 +74,7 @@
                     }
                 });
             };
-            
+
             var locateUser = function(onLocated) {
         	    var onSuccess = function(position) {
         	        onLocated(new google.maps.LatLng(position.coords.latitude, position.coords.longitude));
@@ -89,14 +89,14 @@
         	    navigator.geolocation ?
         			navigator.geolocation.getCurrentPosition(onSuccess, onFail) : onFail();
         	};
-        	
+
         	var calculateSpotDistances = function() {
         	    for(var i=0; i<walkingTourSpots.length; i++) {
         	        var spotLocation = walkingTourSpots[i]["location"];
         	        var distance = google.maps.geometry.spherical.computeDistanceBetween(userLocation, spotLocation);
         	        walkingTourSpots[i]["distanceFromCurrentLocation"] = distance;
     	        }
-    	        
+
     	        walkingTourSpots.sort(function(a,b) {
                     if (a.distanceFromCurrentLocation < b.distanceFromCurrentLocation)
                         return -1;
@@ -105,7 +105,7 @@
                     return 0;
                 });
         	};
-        	
+
         	$("#next-button button").click(function(){
         	    if(walkingTourSpots.length == 1) {
         	        $("#tour-spot").hide();
@@ -116,34 +116,34 @@
                         userLocation = location;
                         walkingTourSpots.splice(0,1);
                         calculateSpotDistances();
-                        setTourStop(); 
+                        setTourStop();
                     });
                 }
             });
-    	
+
             var loadApp = function(pageData, mapData) {
                 var pages = pageData["results"];
                 var maps = mapData["results"];
                 var bounds = new google.maps.LatLngBounds();
-                
+
                 locateUser(function(location) {
                     userLocation = location;
                     for(var i=0; i<maps.length; i++) {
                         if(maps[i]["resource_uri"] != pages[i]["map"]) {
                             console.log("Map data and page data don't match for index " + i);
                         }
-                        
+
                         var spotPoint = maps[i]["points"]["coordinates"][0];
                         var spotLocation = new google.maps.LatLng(spotPoint[1], spotPoint[0]);
-                        
-                        
+
+
                         walkingTourSpots.push({
                             "page": pages[i],
                             "map": maps[i],
                             "id": $(pages[i]["content"]).find(".walking-tour-id").text(),
                             "location": spotLocation
                         });
-                        
+
                         var marker = new google.maps.Marker({
             				position: spotLocation,
             				map: map,
@@ -151,23 +151,22 @@
             			});
             			bounds.extend(spotLocation);
                     }
-                    
+
         			map.fitBounds(bounds);
         			map.setZoom(15);
         			calculateSpotDistances();
                     setTourStop();
                 });
             };
-        
-            var maps = "https://localwiki.org/api/v4/maps/?region=145&page__tags=portsmouth,walkingtour&limit=100&format=json";
-            var pages = "https://localwiki.org/api/v4/pages/?region=145&tags=portsmouth,walkingtour&limit=100&format=json";
+
+            var maps = "https://localwiki.org/api/v4/maps/?region=632&page__tags=floydsolar&limit=100&format=json";
+            var pages = "https://localwiki.org/api/v4/pages/?region=632&tags=floydsolar&limit=100&format=json";
             $.getJSON(pages).done(function(pageData){
-                $.getJSON(maps).done(function(mapData){ 
+                $.getJSON(maps).done(function(mapData){
                     loadApp(pageData, mapData);
                 });
             });
-            
+
         </script>
     </body>
 </html>
-
